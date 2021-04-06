@@ -1,15 +1,4 @@
 import tensorflow as tf
-from dataset_loader import Dataset
-gpus = tf.config.experimental.list_physical_devices('GPU')
-if gpus:
-    try:
-        for gpu in gpus:
-            tf.config.experimental.set_memory_growth(gpu, True)
-    except RuntimeError as e:
-        print(e)
-
-my_dataset = Dataset(greyscale=True, segmented=True)
-print(my_dataset.test_dataset)
 
 
 def get_cnn_model():
@@ -44,9 +33,3 @@ def get_cnn_model():
     return cnn_model
 
 
-model = get_cnn_model()
-model.summary()
-model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['accuracy'])
-model.fit(my_dataset.train_dataset, epochs=30)
-model.save("first_cnn_model_1ep")
-model.evaluate(my_dataset.validation_dataset)
