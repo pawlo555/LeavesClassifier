@@ -33,6 +33,9 @@ class Dataset:
             self.add_photos('PlantVillage-Dataset/raw/grayscale')
         if segmented:
             self.add_photos('PlantVillage-Dataset/raw/segmented')
+        self.train_dataset.shuffle(buffer_size=1024)
+        self.validation_dataset.shuffle(buffer_size=1024)
+        self.test_dataset.shuffle(buffer_size=1024)
 
     def add_photos(self, path):
         full = tf.keras.preprocessing.image_dataset_from_directory(
