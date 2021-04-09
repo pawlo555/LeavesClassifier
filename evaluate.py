@@ -10,5 +10,5 @@ if gpus:
 
 
 my_dataset = Dataset(greyscale=False, segmented=False)
-model = tf.keras.models.load_model('first_cnn_model_1ep')
-model.evaluate(my_dataset.train_dataset)
+model = tf.keras.models.load_model("models/cnn_model_02")
+#model.evaluate(my_dataset.train_dataset)
