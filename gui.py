@@ -1,19 +1,64 @@
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing import image
+import numpy as np
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
 from PIL import ImageTk, Image
 
-def open_image(path):
-    image = Image.open(path)
-    return ImageTk.PhotoImage(image)
+
+class_map = {0: "Apple___Apple_scab",
+             1: "Apple___Black_rot",
+             2: "Apple___Cedar_apple_rust",
+             3: "Apple___healthy",
+             4: "Blueberry___healthy",
+             5: "Cherry_(including_sour)___healthy",
+             6: "Cherry_(including_sour)___Powdery_mildew",
+             7: "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot",
+             8: "Corn_(maize)___Common_rust_",
+             9: "Corn_(maize)___healthy",
+             10: "Corn_(maize)___Northern_Leaf_Blight",
+             11: "Grape___Black_rot",
+             12: "Grape___Esca_(Black_Measles)",
+             13: "Grape___healthy",
+             14: "Grape___Leaf_blight_(Isariopsis_Leaf_Spot)",
+             15: "Orange___Haunglongbing_(Citrus_greening)",
+             16: "Peach___Bacterial_spot",
+             17: "Peach___healthy",
+             18: "Pepper,_bell___Bacterial_spot",
+             19: "Pepper,_bell___healthy",
+             20: "Potato___Early_blight",
+             21: "Potato___healthy",
+             22: "Potato___Late_blight",
+             23: "Raspberry___healthy",
+             24: "Soybean___healthy",
+             25: "Squash___Powdery_mildew",
+             26: "Strawberry___healthy",
+             27: "Strawberry___Leaf_scorch",
+             28: "Tomato___Bacterial_spot",
+             29: "Tomato___Early_blight",
+             30: "Tomato___healthy",
+             31: "Tomato___Late_blight",
+             32: "Tomato___Leaf_Mold",
+             33: "Tomato___Septoria_leaf_spot",
+             34: "Tomato___Spider_mites Two-spotted_spider_mite",
+             35: "Tomato___Target_Spot",
+             36: "Tomato___Tomato_mosaic_virus",
+             37: "Tomato___Tomato_Yellow_Leaf_Curl_Virus"}
+
 
 def predict(img_path):
+    model = load_model("models/cnn_model_02")
+    print("Predicting...")
+    sample_image = image.load_img(img_path, target_size=(256, 256))
+    input_arr = image.img_to_array(sample_image)
+    input_arr = np.array([input_arr])  # Convert single image to a batch
+    predictions = model.predict(input_arr).flatten()
+    pred_string = class_map.get(np.argmax(predictions))
+    return pred_string
 
-
-    return "Some Pretty Leaf!"
 
 class App:
-
     leaf_path = None
     leaf_prediction = ""
 
@@ -48,18 +93,24 @@ class App:
         return
 
     def process_image(self):
-        image = ImageTk.PhotoImage(Image.open(self.leaf_path))
-        image_panel = tk.Label(image=image)
+        image_to_display = Image.open(self.leaf_path)
+        image_to_display = image_to_display.resize((256, 256))
+        image_to_display = ImageTk.PhotoImage(image_to_display)
+        # print(image_to_display.width(), "x", image_to_display.height())
+
+        image_panel = tk.Label(image=image_to_display)
         image_panel.place(width=256, height=256, x=122, y=80)
-        image_panel.img = image
+        image_panel.img = image_to_display
 
         self.leaf_prediction = predict(self.leaf_path)
-        leaf_label = tk.Label(self.window, text=self.leaf_prediction, font=("Courier", 18))
+        leaf_label = tk.Label(self.window, text=self.leaf_prediction, font=("Courier", 14))
         leaf_label.place(width=500, height=50, x=0, y=350)
         return
 
+
 def main():
     App()
+
 
 if __name__ == '__main__':
     main()
