@@ -5,6 +5,14 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
 from PIL import ImageTk, Image
+import tensorflow as tf
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+    try:
+        for gpu in gpus:
+            tf.config.experimental.set_memory_growth(gpu, True)
+    except RuntimeError as e:
+        print(e)
 
 
 class_map = {0: "Apple___Apple_scab",
@@ -46,17 +54,7 @@ class_map = {0: "Apple___Apple_scab",
              36: "Tomato___Tomato_mosaic_virus",
              37: "Tomato___Tomato_Yellow_Leaf_Curl_Virus"}
 
-
-def predict(img_path):
-    model = load_model("models/cnn_model_02")
-    print("Predicting...")
-    sample_image = image.load_img(img_path, target_size=(256, 256))
-    input_arr = image.img_to_array(sample_image)
-    input_arr = np.array([input_arr])  # Convert single image to a batch
-    predictions = model.predict(input_arr).flatten()
-    pred_string = class_map.get(np.argmax(predictions))
-    return pred_string
-
+print(list(class_map.values()))
 
 class App:
     leaf_path = None
@@ -69,6 +67,7 @@ class App:
         self.height = 500
         self.window.resizable(False, False)
         self.window.geometry(str(self.width) + "x" + str(self.height))
+        self.model = load_model("models/inception_01")
 
         button_load = tk.Button(
             self.window,
@@ -92,6 +91,16 @@ class App:
         self.process_image()
         return
 
+    def predict(self, img_path):
+        print("Predicting...")
+        sample_image = image.load_img(img_path, target_size=(256, 256))
+        input_arr = image.img_to_array(sample_image)
+        input_arr = np.array([input_arr])  # Convert single image to a batch
+        predictions = self.model.predict(input_arr).flatten()
+        print(predictions)
+        pred_string = class_map.get(np.argmax(predictions))
+        return pred_string
+
     def process_image(self):
         image_to_display = Image.open(self.leaf_path)
         image_to_display = image_to_display.resize((256, 256))
@@ -102,7 +111,7 @@ class App:
         image_panel.place(width=256, height=256, x=122, y=80)
         image_panel.img = image_to_display
 
-        self.leaf_prediction = predict(self.leaf_path)
+        self.leaf_prediction = self.predict(self.leaf_path)
         leaf_label = tk.Label(self.window, text=self.leaf_prediction, font=("Courier", 14))
         leaf_label.place(width=500, height=50, x=0, y=350)
         return
