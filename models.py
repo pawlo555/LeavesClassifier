@@ -62,8 +62,28 @@ def get_inception_model():
     return inception_model
 
 
+def get_residual_model():
+    inputs = tf.keras.Input(shape=(256, 256, 3,))
+    x = tf.keras.layers.Conv2D(8, (3, 3), padding='same')(inputs)
+    x = tf.keras.layers.Conv2D(16, (3, 3), padding='same')(x)
+    x = tf.keras.layers.MaxPooling2D((2, 2), strides=(2, 2))(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    for i in range(4):
+        for _ in range(4):
+            x = residual_layer(x, 2 ** i * 32)
+        x = tf.keras.layers.MaxPooling2D((2, 2), strides=(2, 2))(x)
+    x = tf.keras.layers.MaxPooling2D((2, 2), strides=(2, 2))(x)
+    x = tf.keras.layers.Flatten()(x)
+    x = tf.keras.layers.Dense(units=1000, activation='relu')(x)
+    x = tf.keras.layers.Dropout(0.5)(x)
+    outputs = tf.keras.layers.Dense(units=38, activation='softmax')(x)
+    inception_model = tf.keras.Model(inputs=inputs, outputs=outputs)
+    return inception_model
+
+
 def inception_layer(input, filters):
     """
+    Creates a inception layer
     :param input:
     :param filters: tuple with numbers of filters in inception layer
     :return:
@@ -77,3 +97,22 @@ def inception_layer(input, filters):
     max_pool = tf.keras.layers.Conv2D(filters[3], (1, 1), padding='same')(max_pool)
     output = tf.keras.layers.concatenate([conv_1, conv_3, conv_5, max_pool], axis=3)
     return output
+
+
+def residual_layer(input, filters):
+    """
+    Residual layer
+    :param input:
+    :param filters:
+    :return: output of residual layer
+    """
+    x = tf.keras.layers.Conv2D(filters, kernel_size=(3, 3), padding='same')(input)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.Activation('relu')(x)
+    x = tf.keras.layers.Conv2D(filters, kernel_size=(3, 3), padding='same')(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    last_dim = tf.keras.backend.int_shape(input)
+    if last_dim[3] != filters:
+        input = tf.keras.layers.Conv2D(filters, kernel_size=(1, 1), padding='same')(input)
+    added = tf.keras.layers.add([input, x])
+    return tf.keras.layers.Activation('relu')(added)
