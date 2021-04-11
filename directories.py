@@ -29,17 +29,18 @@ old_data_paths = ["PlantVillage-Dataset/raw/color",
                   "PlantVillage-Dataset/raw/grayscale",
                   "PlantVillage-Dataset/raw/segmented"]
 
+
 def choose_destination():
     random_num = random.randint(1, 10)
     if random_num <= 8: return new_data_paths[0]
     if random_num == 9: return new_data_paths[1]
     if random_num == 10: return new_data_paths[2]
 
+
 def manage_class(class_name):
     source_paths = []
     for img_type in range(3):
         source_paths.append(os.path.join(old_data_paths[img_type], class_name))
-
 
     files = {"color": os.listdir(source_paths[0]),
              "grayscale": os.listdir(source_paths[1]),
@@ -53,8 +54,6 @@ def manage_class(class_name):
             destination = os.path.join(destination_path, class_name + "_" + img_type + "_" + str(i + 1) + ".jpg")
             shutil.move(source, destination)
             j += 1
-
-
 
 
 for cls in classes:
