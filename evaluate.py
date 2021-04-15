@@ -10,5 +10,5 @@ if gpus:
         print(e)
 
 
-model = tf.keras.models.load_model("models/inception_01")
+model = tf.keras.models.load_model("models/residual_02")
 model.evaluate(Dataset().test_dataset)

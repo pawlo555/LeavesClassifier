@@ -1,0 +1,19 @@
+Models validation score:
+cnn_03
+515/515 [==============================] - 46s 83ms/step - loss: 0.2200 - accuracy: 0.9532
+cnn_model_02
+515/515 [==============================] - 37s 70ms/step - loss: 5.1113 - accuracy: 0.4783
+inception_01
+515/515 [==============================] - 53s 99ms/step - loss: 5.4420 - accuracy: 0.5190
+inception_02
+515/515 [==============================] - 52s 100ms/step - loss: 0.1115 - accuracy: 0.9647
+inception_03
+515/515 [==============================] - 50s 96ms/step - loss: 0.0905 - accuracy: 0.9731
+residual_01
+515/515 [==============================] - 74s 142ms/step - loss: 0.1797 - accuracy: 0.9484
+residual_02
+515/515 [==============================] - 71s 136ms/step - loss: 0.0820 - accuracy: 0.9758
+
+Best model on testing:
+residual_02
+510/510 [==============================] - 83s 154ms/step - loss: 0.0798 - accuracy: 0.9768
